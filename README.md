@@ -1,33 +1,15 @@
-# HTTP Server Project Writeup — Multithreaded HTTP/1.0 Web Server - NO CODE
+# Multithreaded Web Server (HTTP/1.0)
 
-## High-level description
+## Overview
+This project implements a small web server that listens on a TCP port, interprets basic HTTP/1.0 requests, and serves content from a configurable document root. The focus is on correct request/response behavior, safe file serving, and handling multiple clients concurrently.
 
-This project implements a **HTTP/1.0 web server** that listens on a TCP port, parses incoming HTTP requests, and serves content from a structured document root (e.g., `http-root-dir`). It supports both **static content** (HTML/images/files) and **dynamic content** via **CGI**, along with directory browsing and multiple concurrency models. The emphasis is on correct HTTP request/response behavior, robust file serving, and scalable request handling under concurrent clients.
-
-## Course / policy note
-
-Completed for **Purdue CS252 (Spring 2025)**. Source code is **not publicly available** in order to respect course and academic integrity policies.
-
-## Implemented functionality
-
-### Core HTTP handling
-- Parses HTTP request lines and headers (HTTP/1.0)
-- Handles **GET** requests end-to-end (status codes + headers + body)
-- Serves static files from the configured document root (e.g., `http-root-dir/htdocs`)
-
-### Directory browsing
-- If a requested path is a directory, returns an HTML directory listing with navigable links
-- Supports sorting directory listings by:
-  - name
-  - size
-  - last modified time
-
-### CGI execution
-- Executes CGI programs from `http-root-dir/cgi-bin`
-- **GET CGI support:** passes query parameters through the appropriate CGI mechanism and returns script output to the client
-
-### Authentication
-- Implements **HTTP Basic Authentication** to restrict access (browser prompts for credentials when missing/invalid)
+## Capabilities (High Level)
+- **HTTP request handling:** accepts connections, parses requests and headers, and returns well-formed HTTP responses (status line, headers, body).
+- **Static content serving:** delivers common file types from a document root while enforcing path safety (e.g., preventing unintended filesystem access).
+- **Dynamic content execution:** supports running server-side programs/scripts and returning their output as HTTP responses.
+- **Access control:** supports an authentication mechanism to restrict access to protected resources.
+- **Concurrency options:** explores multiple models for handling simultaneous clients, including single-threaded and multi-worker approaches.
+- **Observability:** includes basic operational visibility such as request logging and a lightweight status view for runtime metrics.
 
 ### Concurrency modes
 Supports four server modes:
@@ -42,12 +24,18 @@ Supports four server modes:
 
 ## Extra credit
 - **Full POST support for CGI**
-  - Reads POST request bodies
-  - Pipes POST content to the CGI program’s `stdin`
-  - Sets correct `CONTENT_LENGTH` for the CGI environment
-- **Robustness with real applications**
-  - Validated behavior with real browsers (including **Google Chrome**) and higher-stress request patterns
+
+## What I Learned
+- **Networking fundamentals:** TCP accept loops, connection lifecycles, and dealing with partial reads/writes.
+- **HTTP correctness:** how small protocol details (headers, status codes, content length, and encoding assumptions) affect real clients.
+- **Secure file serving:** validating paths and handling filesystem edge cases safely.
+- **Concurrency tradeoffs:** differences in latency, throughput, resource usage, and failure isolation across process/thread models.
+- **Robustness under load:** why servers must handle malformed inputs, slow clients, and high request churn without crashing or corrupting state.
 
 ## Testing notes (brief)
 - Tested using `curl` and browser-based requests
 - Verified static file serving, directory listing behavior, authentication, CGI GET/POST, and each concurrency mode
+
+## Notes
+This repository intentionally omits implementation details that would function as a step-by-step solution. It is meant to document scope and learning outcomes rather than provide a reference implementation.
+
